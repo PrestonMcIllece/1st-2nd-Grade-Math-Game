@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login!</title>
+	<link href="form.css" rel="stylesheet">
+</head>
+<body>
+	<div>
+		<form method="get" id="form" onsubmit="return false;">
+			First Name: <input type="text" name="firstName" id="fname"> <br>
+			Last Name:  <input type="text" name="lastName" id="lname"><br>
+			<input type="submit" value="Submit" onclick="getUserName();" />
+
+		</form>
+	</div>
+	<div>
+		<form action="space_math.html">
+			<input type="submit" value="PLAY GAME" id="gameButton">
+		</form>
+
+		<script>
+		function othername() {
+		    var input = document.getElementById("userInput").value;
+		    alert(input);
+		}
+
+		function getUserName() {
+			var fnameField = document.getElementById('fname').value;
+			var lnameField = document.getElementById('lname').value;
+
+			    document.write('Your first name is: ' + fnameField);
+			    document.write('Your last name is: ' + lnameField);
+			    //alert(nameField);
+			
+			}
+		</script>
+	</div>
+
+</body>
+</html>
