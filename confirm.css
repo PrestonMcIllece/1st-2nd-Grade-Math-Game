@@ -1,0 +1,59 @@
+html {
+	background-image: url("night-sky.png");
+}
+
+#welcomeText {
+    color: limegreen;
+	font-size: 65px;
+    font-family: 'Nunito', sans-serif;
+    vertical-align: middle;
+    padding-top: 100px;
+    font-weight: bold;
+}
+
+.buttons {
+    background-color: limegreen;
+    border: none;
+    color: white;
+    padding: 30px 60px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#buttonsDiv {
+    display: grid;
+    grid-template-columns: repeat(4, 2fr);
+    padding-top: 200px;
+    grid-gap: 55px;
+}
+
+#buttonOneDiv {
+    grid-column: 2;
+}
+
+#buttonTwoDiv {
+    grid-column: 3;
+}
+
+#buttonOne {
+    height: 78px;
+    width: 246.34px;
+    vertical-align: center;
+    justify-content: center;
+    margin: 20px;
+    
+}
+
+#buttonTwo {
+    background-color: #e04a4a;
+    height: 78px;
+    width: 246.34px;
+    vertical-align: center;
+    justify-content: center;
+    margin: 20px;
+    
+}

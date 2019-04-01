@@ -31,6 +31,8 @@
         <!-- Enable Browser History by replacing useBrowserHistory tokens with two hyphens -->
         <!-- BEGIN Browser History required section -->
         <link rel="stylesheet" href="space_math.css">
+        <link rel="shortcut icon" type="image/png" href="rocket.png">
+        
         <link rel="stylesheet" type="text/css" href="history/history.css" />
         <script type="text/javascript" src="history/history.js"></script>
         <!-- END Browser History required section -->  
@@ -41,10 +43,10 @@
             var swfVersionStr = "32.0.0";
             // To use express install, set to playerProductInstall.swf, otherwise the empty string. 
             var xiSwfUrlStr = "playerProductInstall.swf";
-            var flashvars = {
-                fname: "PrestonStevenJohnson"
-                lname: "SMith"
-            };
+            var flashvars = {};
+            flashvars.fname = " <?php $_POST[firstName] ?>"; 
+            flashvars.lname = " <?php $_POST[lastName] ?>";
+            
             var params = {};
             params.quality = "high";
             params.wmode = "direct";
