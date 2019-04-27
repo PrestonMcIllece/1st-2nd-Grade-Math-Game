@@ -1,3 +1,8 @@
+/**
+ * SPACEMATH - AUTHORS: 404 NOT FOUND
+ * Class that generates the scrolling background for the game.
+ */
+
 package Objects
 {
 	import Core.Assets;
@@ -6,12 +11,15 @@ package Objects
 	
 	public class Background extends Sprite
 	{
-		
+		//INSTANCE VARIABLES
 		private var sky1:Image;
 		private var sky2:Image;
 		private var sky3:Image;
 		private var sky4:Image;
 		
+		/**
+		 * Constructor - adds multiple sky images.
+		 */
 		public function Background()
 		{
 			sky1 = new Image(Assets.skyTexture);
