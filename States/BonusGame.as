@@ -1,6 +1,6 @@
 /**
  * SPACEMATH - AUTHORS: 404 NOT FOUND
- * Class that generates the single digits plus and minus game.
+ * Class that generates the bonus game.
  */
 
 package States
@@ -21,7 +21,7 @@ package States
 	import starling.events.Event;
 	import starling.text.TextFormat;
 	
-	public class SingleDigits extends Sprite implements IState
+	public class BonusGame extends Sprite implements IState
 	{
 		//INSTANCE VARIABLES
 		private var game:Game;
@@ -41,12 +41,14 @@ package States
 		private var count:int = 0;
 		private var probNum:int = 0;
 		private var updateCount:int = 0;
+		public static var complete:int = 0;
+		private var time:int;
 		
 		/**
 		 * Constructor for SingleDigits. Adds the game screen to the stage, calls init() and getProblemSet()
 		 * to generate problems. 
 		 */
-		public function SingleDigits(game:Game)
+		public function BonusGame(game:Game)
 		{
 			this.game = game;
 			addEventListener(Event.ADDED_TO_STAGE, init);
@@ -65,22 +67,26 @@ package States
 			background = new Background();
 			addChild(background);
 			
+			complete = 0;
 			correctCount = problems.length;
 			incorrectCount = 0;
 			
+			time = 30;
+			
 			//progress planet
-			planet = new Button(Assets.ta.getTexture("planetpng"));
+			planet = new Button(Assets.ta.getTexture("planetpng"), String(time));
 			planet.height = 125;
 			planet.width = 200;
 			planet.x = background.width - 150;
 			planet.y = 620;
+			planet.textFormat.size = 65;
 			addChild(planet);
 			
 			//progress button
 			progress = new Button(Assets.ta.getTexture("rocket"));
 			progress.height = 100;
 			progress.width = 100;
-			progress.x = -20;
+			progress.x = -40;
 			progress.y = 650;
 			addChild(progress);
 			
@@ -91,7 +97,7 @@ package States
 			play.width = 460;
 			play.x = 40;
 			play.y = 150;
-			play.textFormat.setTo("PT Sans Caption", 80, 0xffffff);
+			play.textFormat.setTo("PT Sans Caption", 75, 0xffffff);
 			addChild(play);
 			
 			//addition button
@@ -111,6 +117,11 @@ package States
 			subtract.x = 520;
 			subtract.y = 375;
 			addChild(subtract);
+			
+			if (updateCount == 1000) {
+				game.changeState(Game.SINGLE_GAME_OVER);
+				progress.removeFromParent(true);
+			}
 		}
 		
 		/**
@@ -144,8 +155,8 @@ package States
 		 */
 		public static function getScore(): Number
 		{
-			var score:Number = correctCount - (0.5 * incorrectCount); //problems[] array length - 0.5 per incorrect click
-			score = score * 10;
+			var score:Number = (complete - (0.5 * incorrectCount))/ complete; //problems[] array length - 0.5 per incorrect click
+			score = score * 100;
 			
 			return score
 		}
@@ -156,6 +167,8 @@ package States
 		public function correctAns(index:int): void {
 			count = 0;
 			probNum++;
+			complete++;
+			
 			if (probNum < problems.length) {
 				problem = problems[probNum];
 				play.visible = false;
@@ -166,17 +179,14 @@ package States
 				play.width = 460;
 				play.x = 40;
 				play.y = 150;
-				play.textFormat.setTo("PT Sans Caption", 80, 0xffffff);
+				play.textFormat.setTo("PT Sans Caption", 75, 0xffffff);
 				addChild(play);
-				var yesSound:Sound = new Sound();
-				yesSound.load(new URLRequest("simpsons_yes_man.mp3"));
-				yesSound.play();
-				progress.x += (background.width/problems.length) - 10;
+				//progress.x += background.width/problems.length;
 			} else { //game over (all problems answered)
 				var clap:Sound = new Sound();
 				clap.load(new URLRequest("clap.mp3"));
 				clap.play();
-				game.changeState(Game.SINGLE_GAME_OVER);
+				game.changeState(Game.BONUS_GAME_OVER);
 				progress.removeFromParent(true);
 			}
 		}
@@ -189,9 +199,6 @@ package States
 				incorrectCount++;
 			}
 			count++; //counts incorrect tries per problem 
-			var noSound:Sound = new Sound();
-			noSound.load(new URLRequest("patrick_no.mp3"));
-			noSound.play();
 			if (count == 2) { //if two incorrect tries, show answer
 				incorrectCount++;
 				//Generates the correction string
@@ -207,7 +214,7 @@ package States
 				play.width = 460;
 				play.x = 40;
 				play.y = 150;
-				play.textFormat.setTo("PT Sans Caption", 70, 0xffffff);
+				play.textFormat.setTo("PT Sans Caption", 65, 0xffffff);
 				addChild(play);
 			}
 		}
@@ -220,16 +227,23 @@ package States
 			var firstNum:Array = [];
 			var secNum:Array = [];
 			
-			for(var i:int = 0; i < 10; i++) { //change i < #, to change # of problems in set
-				var first:int = randomRange(1,9);
+			for(var i:int = 0; i < 100; i++) { //change i < #, to change # of problems in set
+				var first:int = randomRange(1,99);
 				firstNum[i] = first;
 				var second:int = randomRange(1,9);
 				secNum[i] = second;
 				
 				if (firstNum[i] > secNum[i]) { //subtract them
-					answers[i] = "-";
-					answer[i] = firstNum[i] - secNum[i];
-					problems[i] = String(firstNum[i]) + " ? " + String(secNum[i]) + " = " + String(answer[i]);
+					var rand:int = randomRange(0,1)
+					if (rand == 1) {
+						answers[i] = "-";
+						answer[i] = firstNum[i] - secNum[i];
+						problems[i] = String(firstNum[i]) + " ? " + String(secNum[i]) + " = " + String(answer[i]);
+					} else {
+						answers[i] = "+";
+						answer[i] = firstNum[i] + secNum[i];
+						problems[i] = String(firstNum[i]) + " ? " + String(secNum[i]) + " = " + String(answer[i]);
+					}
 					
 				} else { //add them
 					answers[i] = "+";
@@ -262,21 +276,24 @@ package States
 			background.update();
 			updateCount++;
 			
-			if (updateCount % 15 == 0 && updateCount % 30 == 0) {
-				progress.x += 0.75;
-				progress.y += 1.0;
-			} else if (updateCount % 15 == 0) {
-				//progress.x -= 1.0;
-				progress.y -= 1.0;
+			if (updateCount == 1800) {
+				game.changeState(Game.BONUS_GAME_OVER);
+				progress.removeFromParent(true);
 			}
 			
-			if (updateCount % 50 == 0 && updateCount % 100 == 0) {
-				planet.x += 2.5;
-				planet.y += 2.5;
-			} else if (updateCount % 50 == 0) {
-				planet.x -= 2.5;
-				planet.y -= 2.5;
+			progress.x += background.width/2000;
+			
+			if (updateCount % 60 == 0) {
+				time--;
+				planet = new Button(Assets.ta.getTexture("planetpng"), String(time));
+				planet.height = 125;
+				planet.width = 200;
+				planet.x = background.width - 150;
+				planet.y = 620;
+				planet.textFormat.size = 70;
+				addChild(planet);
 			}
+
 		}
 		
 		/**

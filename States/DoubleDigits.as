@@ -1,6 +1,6 @@
 /**
  * SPACEMATH - AUTHORS: 404 NOT FOUND
- * Class that generates the number place game.
+ * Class that generates the double digits game.
  */
 
 package States
@@ -14,11 +14,12 @@ package States
 	import Objects.Background;
 	import Objects.Mouse;
 	import starling.display.Button;
+	import starling.display.DisplayObject;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.text.TextFormat;
 	
-	public class PlaceGame extends Sprite implements IState
+	public class DoubleDigits extends Sprite implements IState
 	{
 		//instance variables
 		private var game:Game;
@@ -35,12 +36,13 @@ package States
 		private var seven:Button;
 		private var eight:Button;
 		private var nine:Button;
+		private var ten:Button;
+		private var eleven:Button;
 		private var progress:Button;
 		private var buttonText:TextFormat;
-		private var problems:Array = [];
-		private var answers:Array = [];
-		private var places:Array = [];
-		private var numbers:Array = [];
+		private var problems:Array; //array used for problem set
+		private var answers:Array; //array used for problem set
+		private var remove:Array;
 		private var problem:String;
 		private var problem2:String;
 		private var hundreds:String;
@@ -48,23 +50,27 @@ package States
 		private var ones:String;
 		public static var correctCount:int = 0;
 		public static var incorrectCount:int = 0;
-		private var probNum:int;
+		private var probNum:int = 0;
+		private var countProbs:int = 0;
 		private var count:int = 0;
-		private var planet:Button;
+		private var planet:DisplayObject;
 		private var updateCount:int = 0;
 		
 		/**
 		 * Constructor - generates problems, calls the init function. 
 		 */
-		public function PlaceGame(game:Game)
+		public function DoubleDigits(game:Game)
 		{
 			this.game = game;
 			addEventListener(Event.ADDED_TO_STAGE, init);
 			
+			problems = []; //initialize problem set
+			answers = []; //intialize answers set 
+			remove = []; //problems already used
 			getProblemSet();
-			probNum = 0;
+			
+			probNum = randomRange(0, (problems.length-1));
 			problem  = problems[probNum];
-			problem2 = numbers[probNum];
 		}
 		
 		/**
@@ -92,13 +98,14 @@ package States
 			progress.height = 90;
 			progress.width = 90;
 			progress.x = -20;
-			progress.y = 650;
+			progress.y = 670;
 			addChild(progress);
 			
 			//question button
-			play = new Button(Assets.ta.getTexture("buttonpng"), problem + "\n" + problem2);
+			//play = new Button(Assets.ta.getTexture("buttonpng"), "Problems coming soon!");
+			play = new Button(Assets.ta.getTexture("buttonpng"), String(problem));
 			play.addEventListener(Event.TRIGGERED, sendHome);
-			play.height = 333;
+			play.height = 300;
 			play.width = 650;
 			play.x = 40;
 			play.y = 100;
@@ -106,7 +113,7 @@ package States
 			addChild(play);
 			
 			//zero button
-			zero = new Button(Assets.ta.getTexture("buttonpng"), "0");
+			zero = new Button(Assets.ta.getTexture("buttonpng"), String(answers[0]));
 			zero.addEventListener(Event.TRIGGERED, onZero);
 			zero.height = 90;
 			zero.width = 90;
@@ -116,7 +123,7 @@ package States
 			addChild(zero);
 			
 			//one button
-			one = new Button(Assets.ta.getTexture("buttonpng"), "1");
+			one = new Button(Assets.ta.getTexture("buttonpng"), String(answers[1]));
 			one.addEventListener(Event.TRIGGERED, onOne);
 			one.height = 90;
 			one.width = 90;
@@ -126,7 +133,7 @@ package States
 			addChild(one);
 			
 			//two button
-			two = new Button(Assets.ta.getTexture("buttonpng"), "2");
+			two = new Button(Assets.ta.getTexture("buttonpng"), String(answers[2]));
 			two.addEventListener(Event.TRIGGERED, onTwo);
 			two.height = 90;
 			two.width = 90;
@@ -136,7 +143,7 @@ package States
 			addChild(two);
 			
 			//three button
-			three = new Button(Assets.ta.getTexture("buttonpng"), "3");
+			three = new Button(Assets.ta.getTexture("buttonpng"), String(answers[3]));
 			three.addEventListener(Event.TRIGGERED, onThree);
 			three.height = 90;
 			three.width = 90;
@@ -146,7 +153,7 @@ package States
 			addChild(three);
 			
 			//four button
-			four = new Button(Assets.ta.getTexture("buttonpng"), "4");
+			four = new Button(Assets.ta.getTexture("buttonpng"), String(answers[4]));
 			four.addEventListener(Event.TRIGGERED, onFour);
 			four.height = 90;
 			four.width = 90;
@@ -156,7 +163,7 @@ package States
 			addChild(four);
 			
 			//five button
-			five = new Button(Assets.ta.getTexture("buttonpng"), "5");
+			five = new Button(Assets.ta.getTexture("buttonpng"), String(answers[5]));
 			five.addEventListener(Event.TRIGGERED, onFive);
 			five.height = 90;
 			five.width = 90;
@@ -166,7 +173,7 @@ package States
 			addChild(five);
 			
 			//six button
-			six = new Button(Assets.ta.getTexture("buttonpng"), "6");
+			six = new Button(Assets.ta.getTexture("buttonpng"), String(answers[6]));
 			six.addEventListener(Event.TRIGGERED, onSix);
 			six.height = 90;
 			six.width = 90;
@@ -176,7 +183,7 @@ package States
 			addChild(six);
 			
 			//seven button
-			seven = new Button(Assets.ta.getTexture("buttonpng"), "7");
+			seven = new Button(Assets.ta.getTexture("buttonpng"), String(answers[7]));
 			seven.addEventListener(Event.TRIGGERED, onSeven);
 			seven.height = 90;
 			seven.width = 90;
@@ -186,7 +193,7 @@ package States
 			addChild(seven);
 			
 			//eight button
-			eight = new Button(Assets.ta.getTexture("buttonpng"), "8");
+			eight = new Button(Assets.ta.getTexture("buttonpng"), String(answers[8]));
 			eight.addEventListener(Event.TRIGGERED, onEight);
 			eight.height = 90;
 			eight.width = 90;
@@ -196,7 +203,7 @@ package States
 			addChild(eight);
 			
 			//nine button
-			nine = new Button(Assets.ta.getTexture("buttonpng"), "9");
+			nine = new Button(Assets.ta.getTexture("buttonpng"), String(answers[9]));
 			nine.addEventListener(Event.TRIGGERED, onNine);
 			nine.height = 90;
 			nine.width = 90;
@@ -209,8 +216,9 @@ package States
 		//onZero
 		private function onZero(event:Event): void
 		{
-			if (answers[probNum] == "0") {
+			if (answers[0] == answers[probNum]) {
 				correctAns();
+				zero.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
@@ -219,8 +227,9 @@ package States
 		//onOne
 		private function onOne(event:Event): void
 		{
-			if (answers[probNum] == "1") {
+			if (answers[1] == answers[probNum]) {
 				correctAns();
+				one.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
@@ -229,8 +238,9 @@ package States
 		//onTwo
 		private function onTwo(event:Event): void
 		{
-			if (answers[probNum] == "2") {
+			if (answers[2] == answers[probNum]) {
 				correctAns();
+				two.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
@@ -239,8 +249,9 @@ package States
 		//onThree
 		private function onThree(event:Event): void
 		{
-			if (answers[probNum] == "3") {
+			if (answers[3] == answers[probNum]) {
 				correctAns();
+				three.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
@@ -249,8 +260,9 @@ package States
 		//onFour
 		private function onFour(event:Event): void
 		{
-			if (answers[probNum] == "4") {
+			if (answers[4] == answers[probNum]) {
 				correctAns();
+				four.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
@@ -259,18 +271,20 @@ package States
 		//onFive
 		private function onFive(event:Event): void
 		{
-			if (answers[probNum] == "5") {
+			
+			if (answers[5] == answers[probNum]) {
 				correctAns();
+				five.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
 		}
-		
 		//onSix
 		private function onSix(event:Event): void
 		{
-			if (answers[probNum] == "6") {
+			if (answers[6] == answers[probNum]) {
 				correctAns();
+				six.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
@@ -279,8 +293,9 @@ package States
 		//onSeven
 		private function onSeven(event:Event): void
 		{
-			if (answers[probNum] == "7") {	
+			if (answers[7] == answers[probNum]) {
 				correctAns();
+				seven.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
@@ -289,8 +304,9 @@ package States
 		//onEight
 		private function onEight(event:Event): void
 		{
-			if (answers[probNum] == "8") {
+			if (answers[8] == answers[probNum]) {
 				correctAns();
+				eight.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
@@ -299,27 +315,77 @@ package States
 		//onNine
 		private function onNine(event:Event): void
 		{
-			if (answers[probNum] == "9") {
+			if (answers[9] == answers[probNum]) {
 				correctAns();
+				nine.visible = false;
 			} else { //incorrect answer
 				incorrectAns();
 			}
 		}
 		
 		/**
+		 * Method that generates the problem and answer sets for the game.
+		 */
+		public function getProblemSet(): void {
+			var firstNum:Array = [];
+			var secNum:Array = [];
+			var check1:int = 0;
+			var check2:int = 0;
+			
+			for(var i:int = 0; i < 10; i++) { //change i < #, to change # of problems in set
+				var first:int = randomRange(10,99);
+				firstNum[i] = first;
+				var second:int = randomRange(1,9);
+				secNum[i] = second;
+				
+				check1 = firstNum[i] - secNum[i];
+				check2 = firstNum[i] + secNum[i];
+				
+				//while there is already a problem with that answer, produce a new second number
+				while (answers.indexOf(check1) != -1 && answers.indexOf(check2) != -1) {
+					second = randomRange(1,9);
+				}
+				
+				if (problems.length % 2 == 0) { //subtract them
+					answers[i] = firstNum[i] - secNum[i];
+					problems[i] = String(firstNum[i]) + " - " + String(secNum[i]) + " = ? ";
+					
+				} else { //add them, move largest number first
+					answers[i] = firstNum[i] + secNum[i];
+					problems[i] = String(firstNum[i]) + " + " + String(secNum[i]) + " = ? ";
+				}
+				
+			}
+			
+			//fill the remove array with problems numbers 0 thru (problems array length - 1)
+			remove = [];
+			for (var x:int = 0; x < problems.length; x++) {
+				remove[x] = x;
+			}
+			
+		}
+		
+		/**
 		 * Function called on a correct answer.
 		 */
 		public function correctAns(): void {
+			//correctCount++;
 			count = 0;
-			probNum++;
-			if (probNum < problems.length) {
+			countProbs++;
+			//remove.push(probNum);
+			remove[probNum] = 100;
+			progress.x += (background.width/problems.length) - 15;
+			if (countProbs < problems.length) { //still problems left
+				probNum = randomRange(0, (problems.length - 1));
+				while(remove.indexOf(probNum) == -1) { //if problem num not in remove (already chosen)
+					probNum = randomRange(0, (problems.length - 1)); //choose new problem
+				}
 				problem = problems[probNum];
-				problem2 = numbers[probNum];
 				play.visible = false;
 				//new question on play button
-				play = new Button(Assets.ta.getTexture("buttonpng"), problem + "\n" + problem2);
+				play = new Button(Assets.ta.getTexture("buttonpng"), String(problem));
 				play.addEventListener(Event.TRIGGERED, sendHome);
-				play.height = 333;
+				play.height = 300;
 				play.width = 650;
 				play.x = 40;
 				play.y = 100;
@@ -328,13 +394,12 @@ package States
 				var yesSound:Sound = new Sound();
 				yesSound.load(new URLRequest("simpsons_yes_man.mp3"));
 				yesSound.play();
-				progress.x += (background.width/problems.length) - 15;
 			} else {
+				progress.visible = false;
 				var clap:Sound = new Sound();
 				clap.load(new URLRequest("clap.mp3"));
 				clap.play();
-				game.changeState(Game.PLACE_GAME_OVER);
-				progress.visible = false;
+				game.changeState(Game.DOUBLE_GAME_OVER);
 			}
 		}
 		
@@ -342,82 +407,29 @@ package States
 		 * Function called on an incorrect answer.
 		 */
 		public function incorrectAns(): void {
-			if (count == 0) {
+			if (count == 0) { //first incorrect answer for the problem
 				incorrectCount++;
 			}
-			count++; //counts incorrect tries per problem
+			count++;
 			var noSound:Sound = new Sound();
 			noSound.load(new URLRequest("patrick_no.mp3"));
 			noSound.play();
-			if (count == 2) { //if too many incorrect tries, show answer
+			if (count == 2) { //second incorrect answer, show the answer
 				incorrectCount++;
-				var str:String = "\"" + answers[probNum] + "\"" + " is in the" + places[probNum] + "place. \n" + problem2;
+				var str:String;
+				var ques:int = problem.indexOf("?");
+				var beg:String = problem.substring(0,ques);
+				var end:String = String(answers[probNum]);
+				var prob:String = beg + end;				
+				//str = "The correct answer is: " + answers[index] + "\n\n" + problem;
+				str = "The correct answer is: " + answers[probNum] + "\n" + prob;
 				play = new Button(Assets.ta.getTexture("buttonpng"), str);
-				play.height = 333;
+				play.height = 300;
 				play.width = 650;
 				play.x = 40;
 				play.y = 100;
 				play.textFormat.setTo("PT Sans Caption", 70, 0xffffff);
 				addChild(play);
-			}
-		}
-		
-		/**
-		 * Returns the final score of the game.
-		 */
-		public static function getScore(): Number
-		{
-			var score:Number = correctCount - (0.5 * incorrectCount); //problems[] array length - 0.5 per incorrect click
-			score = score * 10;
-			
-			return score
-		}
-		
-		/**
-		 * Method that generates the problem and answer sets for the game.
-		 */
-		public function getProblemSet(): void {
-			var placeInt:int = 0;
-			var ones:String;
-			var tens:String;
-			var hundreds:String;
-			
-			//arrays: numbers, places, answers, problems
-			
-			//randomly select ONES, TENS, HUNDREDS
-			//generate a random 3-digit number
-			//match the place with the matching number
-			for(var i:int = 0; i < 10; i++) { 
-				ones = String(randomRange(0,9));
-				tens = String(randomRange(0,9));
-				hundreds = String(randomRange(0,9));
-				placeInt = randomRange(0,3);
-				
-				while (hundreds == "0") {
-					hundreds = String(randomRange(0,9));
-				}
-				
-				while (ones == tens || ones == hundreds) {
-					ones = String(randomRange(0,9));
-				}
-				
-				while (tens == hundreds) {
-					tens = String(randomRange(0,9));
-				}
-				
-				if (placeInt == 0) {
-					places[i] = " ONES ";
-					answers[i] = ones;
-				} else if(placeInt == 1) {
-					places[i] = " TENS ";
-					answers[i] = tens;
-				} else {
-					places[i] = " HUNDREDS ";
-					answers[i] = hundreds;
-				}
-				
-				numbers[i] = hundreds + tens + ones;
-				problems[i] = "What number is in the" + places[i] + "place?";
 			}
 		}
 		
@@ -429,10 +441,22 @@ package States
 		}
 		
 		/**
+		 * Functions that gets the player's final score (percent accurate).
+		 */
+		public static function getScore(): Number
+		{
+			var score:Number = correctCount - (0.5 * incorrectCount); //problems[] array length - 0.5 per incorrect click
+			score = score * 10;
+			return score
+		}
+		
+		/**
 		 * Sends player back to home screen.
 		 */
 		public function sendHome(): void {
 			game.changeState(Game.PLAY_STATE);
+			correctCount = 0;
+			incorrectCount = 0;
 		}
 		
 		/**
@@ -441,6 +465,7 @@ package States
 		public function update():void
 		{
 			background.update();
+			
 			updateCount++;
 			
 			if (updateCount % 15 == 0 && updateCount % 30 == 0) {
@@ -458,7 +483,6 @@ package States
 				planet.x -= 2.5;
 				planet.y -= 2.5;
 			}
-			
 		}
 		
 		/**

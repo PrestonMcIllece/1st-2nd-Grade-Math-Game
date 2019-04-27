@@ -1,11 +1,11 @@
 /**
  * SPACEMATH - AUTHORS: 404 NOT FOUND
- * Class that generates the single digits game over and score.
+ * Class that generates the number double digits game over screen and score.
  */
 
 package States
 {
-	//flox imports to save score
+	//our class imports
 	import com.gamua.flox.Flox;
 	import com.gamua.flox.Player;
 	
@@ -13,41 +13,39 @@ package States
 	import Core.Game;
 	
 	import Interfaces.IState;
-	import Objects.MyPlayer;
+	
 	import Objects.Background;
+	import Objects.MyPlayer;
 	
 	import starling.display.Button;
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.text.TextField;
-	import flash.net.URLRequest;
-	import flash.events.MouseEvent;
 	
-	public class SingleGameOver extends Sprite implements IState
+	public class DoubleGameOver extends Sprite implements IState
 	{
 		//INSTANCE VARIABLES
 		private var game:Game;
 		private var background:Background;
 		private var winner:Button;
 		private var home:Button;
-		private var print:Button;
+		private var cert:Button;
 		private var score:String;
 		private var text:TextField;
 		private var message:String;
-		private var cert:Button;
 		
 		/**
 		 * Constructor - calls the init() function.
 		 */
-		public function SingleGameOver(game:Game)
+		public function DoubleGameOver(game:Game)
 		{
 			this.game = game;
 			addEventListener(Event.ADDED_TO_STAGE, init);
 		}
 		
 		/**
-		 * Init() function that initializes the game background, buttons, and score. 
+		 * Function that initializes the background, score, and game screen buttons.
 		 */
 		private function init(event:Event):void
 		{
@@ -64,17 +62,13 @@ package States
 				}
 			);
 			
-			var score:int = SingleDigits.getScore();
+			var score: int = DoubleDigits.getScore();
 			var current:Player = Player.current;
 			
-			Flox.postScore("spacemath-leaderboard", score, current.id);
-			
-			if (score >= 100) {
-				MyPlayer.single = true;
-			}
-			
 			if (score >= 80) {
-				message = " YOU WIN! \n SCORE: " + String(score) + "%\n \n \n "
+				message = " YOU WIN! \n SCORE: " + String(score) + "%\n \n \n"
+				Flox.postScore("doubledigits", score, current.id);
+				
 				//button to generate a certificate with the player's name
 				cert = new Button(Assets.ta.getTexture("buttonpng"), "PRINT CERTIFICATE");
 				cert.addEventListener(Event.TRIGGERED, generateCert);
@@ -83,23 +77,23 @@ package States
 				cert.x = 0;
 				cert.y = 10;
 				cert.textFormat.setTo("PT Sans Caption", 45, 0xffffff);
+				//addChild(cert)
 				
 			} else {
 				message = "SCORE: " + String(score) + "%\n" + " Keep Going! \n \n \n"
+				Flox.postScore("doubledigits", score, current.id);
 			}
 			
-			//message = String(SingleDigits.correctCount) + "\n" + String(SingleDigits.incorrectCount);
-			
-			//winner button displaying the game score
-			winner = new Button(Assets.ta.getTexture("transparentwin"),"\n" + message + "\n");
+			//winner button with score
+			winner = new Button(Assets.ta.getTexture("transparentwin"), message);
 			winner.textFormat.setTo("PT Sans Caption", 80, 0xffffff);
 			winner.height = 700;
 			winner.width = 720;
 			winner.x = 0;
 			winner.y = 10;
-			addChild(winner)
+			addChild(winner);
 			
-			//button to return to game screen
+			//return to home screen button
 			home = new Button(Assets.ta.getTexture("play"));
 			home.addEventListener(Event.TRIGGERED, homeScreen);
 			home.textFormat.setTo("PT Sans Caption", 50, 0xffffff);
@@ -113,18 +107,13 @@ package States
 				addChild(cert);
 			}
 			
-			
-			//navigate to URL is not working
-			/**
-			print.addEventListener(MouseEvent.CLICK, onClick);
-			function onClick(e:MouseEvent):void{
-				navigateToURL(new URLRequest("page.html"), "_self"); // change "_self" to "_blank" if want to it open in other tab or window. More info in the links I wrote below.
+			if (score == 100) {
+				MyPlayer.double = true;
 			}
-			*/
 		}
 		
 		/**
-		 * Function to regurn to the game play state.
+		 * Function that returns user to game screen.
 		 */
 		private function homeScreen(event:Event): void
 		{
@@ -132,15 +121,15 @@ package States
 		}
 		
 		/**
-		 * Function to regurn to the game play state.
+		 * Function that returns user to game screen.
 		 */
 		private function generateCert(event:Event): void
 		{
-			game.changeState(Game.SINGLE_CERT);
+			game.changeState(Game.DOUBLE_CERT);
 		}
 		
 		/**
-		 * Updates the game scrolling background.
+		 * Updates the scrolling star background.
 		 */
 		public function update():void
 		{
@@ -148,7 +137,7 @@ package States
 		}
 		
 		/**
-		 * Destroys the game and background elements.
+		 * Destroys the background and elements.
 		 */
 		public function destroy():void
 		{
