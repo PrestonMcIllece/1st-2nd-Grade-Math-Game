@@ -1,5 +1,6 @@
 /**
- * Used to imbed and manage the various assets we have in our game.
+ * SPACEMATH - AUTHORS: 404 NOT FOUND
+ * Used to imbed and manage the various assets we have in our game (images, text, buttons, sounds, etc).
  */
 package Core
 {
@@ -13,6 +14,7 @@ package Core
 		//Using ../ takes you back to the parent folder.
 		[Embed(source='../../assets/night-sky.png')]
 		private static var sky:Class;
+		
 		//Texture that we can reference out of this class.
 		public static var skyTexture:Texture;
 		
@@ -23,6 +25,17 @@ package Core
 		
 		[Embed(source='../../assets/atlas.xml', mimeType='application/octet-stream')]
 		private static var atlasXML:Class;
+		
+		//Another texture (certificates) to access outside of this class.
+		public static var skyTexture2:Texture;
+		
+		[Embed(source='../../assets/atlas2.png')]
+		private static var atlas2:Class;
+		
+		public static var ta2:TextureAtlas;
+		
+		[Embed(source='../../assets/atlas2.xml', mimeType='application/octet-stream')]
+		private static var atlas2XML:Class;
 		
 		//"PT Sans Caption"
 		[Embed(source='../../assets/myFont.png')]
@@ -38,11 +51,11 @@ package Core
 			
 			ta = new TextureAtlas(Texture.fromBitmap(new atlas()), 
 				XML(new atlasXML()));
+			
+			ta2 = new TextureAtlas(Texture.fromBitmap(new atlas2()), 
+				XML(new atlas2XML()));
 		
 			TextField.registerBitmapFont(new BitmapFont(Texture.fromBitmap(new myFont()), XML(new myFontXML())));
-			//TextField.registerCompositor(BitmapFont(Texture.fromBitmap(new myFont())), "PT Sans Caption");
-			//TextField.registerCompositor(new BitmapFont(Texture.fromBitmap(new myFont()), XML(new myFontXML())));
-			
 		}
 	}
 }
