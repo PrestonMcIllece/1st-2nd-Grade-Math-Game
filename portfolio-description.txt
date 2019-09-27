@@ -1,0 +1,11 @@
+Portfolio Description
+
+I've chosen to include SpaceMath! in my portfolio because this project gave me a glimpse into 
+what working in the industry is like. For context, this project was structured to simulate a 
+real world software engineering environment. On the first day of class, we were assigned groups,
+assigned a project, and told that we would have three releases throughout the semester with the 
+third release being our final product. This project was invaluable to me because I learned not only
+how to work both individually and in a group setting but also several concepts and procedures that 
+are commonly used in a software engineering setting. SpaceMath! was also valuable because I got to
+experience connecting a frontend Actionscript application to a backend PHP/Flox application as well
+as hosting our server on a Raspberry Pi.
